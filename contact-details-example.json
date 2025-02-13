@@ -1,0 +1,13 @@
+{
+    "FirstName": "Your-First-Name",
+    "LastName": "Your-Last-Name",
+    "ContactType": "PERSON",
+    "OrganizationName": "Your-Organization",
+    "AddressLine1": "Your-Address",
+    "City": "Your-City",
+    "State": "Your-State",
+    "CountryCode": "US",
+    "ZipCode": "Your-ZIP",
+    "PhoneNumber": "+1.1234567890",
+    "Email": "your-email@example.com"
+  }
