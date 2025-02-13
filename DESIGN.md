@@ -89,3 +89,26 @@ This bash script automates the process of registering domains through AWS Route 
 - Handles input validation
 - Provides success/failure feedback
 - Should optionally allow a parameter called --profile to specify the AWS CLI profile to use
+
+## CERTIFICATE CREATOR FOR DOMAIN
+- Accepts domain name as command-line argument
+- Checks if domain is already registered
+- Creates a new certificate if not
+- Handles input validation
+- Provides success/failure feedback
+   - Returns arn for certificate
+- Should optionally allow a parameter called --profile to specify the AWS CLI profile to use
+
+## HOSTED ZONE LOOKUP 
+- Accepts domain name as command-line argument
+- Looks up the hosted zone ID for the domain
+- Handles input validation
+- Provides success/failure feedback
+- Should optionally allow a parameter called --profile to specify the AWS CLI profile to use
+
+## CERTIFICATE VALIDATOR
+- Adds DNS records for given AWS certificate to a hosted zone 
+- Takes a Certificate ARN as command-line argument, or the domain name and looks up the certificate arn.
+- Handles input validation
+- Provides success/failure feedback
+- Should optionally allow a parameter called --profile to specify the AWS CLI profile to use

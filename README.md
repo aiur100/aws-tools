@@ -57,6 +57,67 @@ Checks the status of a domain registration or operation.
 ./check-domain-status.sh --operation-id abc123-def456 --profile myprofile
 ```
 
+### 3. Certificate Creator (`create-certificate.sh`)
+
+Creates an SSL/TLS certificate through AWS Certificate Manager (ACM).
+
+#### Usage:
+```bash
+./create-certificate.sh --domain <domain-name> [--profile <aws-profile>]
+```
+
+#### Examples:
+```bash
+# Create certificate using default AWS profile
+./create-certificate.sh --domain example.com
+
+# Create certificate using specific AWS profile
+./create-certificate.sh --domain example.com --profile myprofile
+```
+
+### 4. Hosted Zone Lookup (`lookup-hosted-zone.sh`)
+
+Looks up the Route 53 hosted zone ID for a domain.
+
+#### Usage:
+```bash
+./lookup-hosted-zone.sh --domain <domain-name> [--profile <aws-profile>]
+```
+
+#### Examples:
+```bash
+# Look up hosted zone using default AWS profile
+./lookup-hosted-zone.sh --domain example.com
+
+# Look up hosted zone using specific AWS profile
+./lookup-hosted-zone.sh --domain example.com --profile myprofile
+```
+
+### 5. Certificate Validator (`validate-certificate.sh`)
+
+Adds DNS validation records to Route 53 for AWS Certificate Manager (ACM) certificates.
+
+#### Usage:
+```bash
+# Validate using certificate ARN
+./validate-certificate.sh --arn <certificate-arn> [--profile <aws-profile>]
+
+# Validate using domain name (will look up the certificate ARN)
+./validate-certificate.sh --domain <domain-name> [--profile <aws-profile>]
+```
+
+#### Examples:
+```bash
+# Validate certificate using ARN
+./validate-certificate.sh --arn arn:aws:acm:region:account:certificate/12345678-1234-1234-1234-123456789012
+
+# Validate certificate using domain name
+./validate-certificate.sh --domain example.com
+
+# Validate certificate using domain name and specific AWS profile
+./validate-certificate.sh --domain example.com --profile myprofile
+```
+
 ## Contact Details Configuration
 
 Before registering a domain, create a `contact-details.json` file with your registration information:
