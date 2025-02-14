@@ -57,7 +57,45 @@ Checks the status of a domain registration or operation.
 ./check-domain-status.sh --operation-id abc123-def456 --profile myprofile
 ```
 
-### 3. Certificate Creator (`create-certificate.sh`)
+### 3. Domain Availability Checker (`domain_checker.sh`)
+
+Checks the availability of multiple domains using AWS Route 53 by processing a CSV file.
+
+#### Usage:
+```bash
+./domain_checker.sh domains.csv [--profile <aws-profile>]
+```
+
+#### CSV File Format
+The input CSV file should have the following format:
+
+```csv
+domain,checked,available
+example.com,false,
+another-domain.com,false,
+```
+
+- `domain`: The domain name to check (required)
+- `checked`: Boolean flag indicating if the domain has been checked (true/false)
+- `available`: Will be populated by the script with the availability status
+
+Notes:
+- The CSV must include the header row
+- Each domain should be on a new line
+- The `checked` column should be set to `false` for new domains
+- Domains marked as `checked=true` will be skipped
+- The script will update the CSV file with availability results
+
+#### Examples:
+```bash
+# Check domains using default AWS profile
+./domain_checker.sh domains.csv
+
+# Check domains using specific AWS profile
+./domain_checker.sh domains.csv --profile myprofile
+```
+
+### 4. Certificate Creator (`create-certificate.sh`)
 
 Creates an SSL/TLS certificate through AWS Certificate Manager (ACM).
 
@@ -75,7 +113,7 @@ Creates an SSL/TLS certificate through AWS Certificate Manager (ACM).
 ./create-certificate.sh --domain example.com --profile myprofile
 ```
 
-### 4. Hosted Zone Lookup (`lookup-hosted-zone.sh`)
+### 5. Hosted Zone Lookup (`lookup-hosted-zone.sh`)
 
 Looks up the Route 53 hosted zone ID for a domain.
 
@@ -93,7 +131,7 @@ Looks up the Route 53 hosted zone ID for a domain.
 ./lookup-hosted-zone.sh --domain example.com --profile myprofile
 ```
 
-### 5. Certificate Validator (`validate-certificate.sh`)
+### 6. Certificate Validator (`validate-certificate.sh`)
 
 Adds DNS validation records to Route 53 for AWS Certificate Manager (ACM) certificates.
 
