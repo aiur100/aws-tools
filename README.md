@@ -158,7 +158,7 @@ Adds DNS validation records to Route 53 for AWS Certificate Manager (ACM) certif
 
 ### 7. RDS Access Manager (`add-rds-access.sh`)
 
-Adds your current IP address (or a specified IP address) to the RDS security group's inbound rules for PostgreSQL access.
+Adds your current IP address (or a specified IP address) to the RDS security group's inbound rules for PostgreSQL access. Provides an interactive selection of available RDS instances.
 
 #### Usage:
 ```bash
@@ -168,6 +168,11 @@ Adds your current IP address (or a specified IP address) to the RDS security gro
 #### Options:
 - `--profile`    AWS profile to use (default: default)
 - `--ip-address` Specific IP address to add (default: auto-detect)
+
+#### Interactive Features:
+- Displays a list of all available RDS instances with their engine type and status
+- Allows selection of target RDS instance through numbered menu
+- Validates user input for correct selection
 
 #### Examples:
 ```bash

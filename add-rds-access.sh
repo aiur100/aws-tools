@@ -52,17 +52,43 @@ else
     echo "Using provided IP address: $IP_ADDRESS"
 fi
 
-# Check if RDS instances exist
-RDS_INSTANCES=$(aws rds describe-db-instances --profile "$AWS_PROFILE" --query 'DBInstances[*].DBInstanceIdentifier' --output text)
-if [ -z "$RDS_INSTANCES" ]; then
+# Get list of RDS instances
+echo "Fetching RDS instances..."
+RDS_INSTANCES=$(aws rds describe-db-instances --profile "$AWS_PROFILE" --query 'DBInstances[*].[DBInstanceIdentifier,Engine,DBInstanceStatus]' --output json)
+if [ -z "$RDS_INSTANCES" ] || [ "$RDS_INSTANCES" == "[]" ]; then
     echo "No RDS instances found in account"
     exit 1
 fi
-echo "Found RDS instances: $RDS_INSTANCES"
 
-# Get the first RDS instance's security group
-FIRST_INSTANCE=$(echo "$RDS_INSTANCES" | awk '{print $1}')
-SECURITY_GROUP=$(aws rds describe-db-instances --profile "$AWS_PROFILE" --db-instance-identifier "$FIRST_INSTANCE" --query 'DBInstances[0].VpcSecurityGroups[0].VpcSecurityGroupId' --output text)
+# Display instances and prompt for selection
+echo
+echo "Available RDS instances:"
+echo "----------------------"
+instance_count=$(echo "$RDS_INSTANCES" | jq length)
+
+for ((i=0; i<instance_count; i++)); do
+    instance_id=$(echo "$RDS_INSTANCES" | jq -r ".[$i][0]")
+    engine=$(echo "$RDS_INSTANCES" | jq -r ".[$i][1]")
+    status=$(echo "$RDS_INSTANCES" | jq -r ".[$i][2]")
+    echo "[$((i+1))] $instance_id ($engine) - Status: $status"
+done
+
+echo
+while true; do
+    read -p "Select an RDS instance (1-$instance_count): " selection
+    if [[ "$selection" =~ ^[0-9]+$ ]] && [ "$selection" -ge 1 ] && [ "$selection" -le "$instance_count" ]; then
+        break
+    else
+        echo "Invalid selection. Please enter a number between 1 and $instance_count"
+    fi
+done
+
+# Get the selected instance
+SELECTED_INSTANCE=$(echo "$RDS_INSTANCES" | jq -r ".[$(($selection-1))][0]")
+echo "Selected instance: $SELECTED_INSTANCE"
+
+# Get the security group for the selected instance
+SECURITY_GROUP=$(aws rds describe-db-instances --profile "$AWS_PROFILE" --db-instance-identifier "$SELECTED_INSTANCE" --query 'DBInstances[0].VpcSecurityGroups[0].VpcSecurityGroupId' --output text)
 
 if [ -z "$SECURITY_GROUP" ]; then
     echo "No security group found for RDS instance"
@@ -71,7 +97,11 @@ fi
 echo "Using security group: $SECURITY_GROUP"
 
 # Check if rule already exists
-EXISTING_RULE=$(aws ec2 describe-security-groups --profile "$AWS_PROFILE" --group-ids "$SECURITY_GROUP" --query "SecurityGroups[0].IpPermissions[?FromPort==$POSTGRES_PORT && ToPort==$POSTGRES_PORT && contains(IpRanges[].CidrIp, '$IP_ADDRESS/32')]" --output text)
+EXISTING_RULE=$(aws ec2 describe-security-groups \
+    --profile "$AWS_PROFILE" \
+    --group-ids "$SECURITY_GROUP" \
+    --query "SecurityGroups[0].IpPermissions[?FromPort==\`$POSTGRES_PORT\` && ToPort==\`$POSTGRES_PORT\` && contains(IpRanges[].CidrIp, '$IP_ADDRESS/32')]" \
+    --output text)
 
 if [ -n "$EXISTING_RULE" ]; then
     echo "Rule for $IP_ADDRESS already exists in security group"
