@@ -156,6 +156,36 @@ Adds DNS validation records to Route 53 for AWS Certificate Manager (ACM) certif
 ./validate-certificate.sh --domain example.com --profile myprofile
 ```
 
+### 7. RDS Access Manager (`add-rds-access.sh`)
+
+Adds your current IP address (or a specified IP address) to the RDS security group's inbound rules for PostgreSQL access.
+
+#### Usage:
+```bash
+./add-rds-access.sh [--profile <aws-profile>] [--ip-address <ip-address>]
+```
+
+#### Options:
+- `--profile`    AWS profile to use (default: default)
+- `--ip-address` Specific IP address to add (default: auto-detect)
+
+#### Examples:
+```bash
+# Add current IP using default AWS profile
+./add-rds-access.sh
+
+# Add specific IP using default AWS profile
+./add-rds-access.sh --ip-address 192.168.1.1
+
+# Add specific IP using custom AWS profile
+./add-rds-access.sh --ip-address 192.168.1.1 --profile myprofile
+```
+
+#### Required IAM Permissions:
+- `rds:DescribeDBInstances`
+- `ec2:DescribeSecurityGroups`
+- `ec2:AuthorizeSecurityGroupIngress`
+
 ## Contact Details Configuration
 
 Before registering a domain, create a `contact-details.json` file with your registration information:
