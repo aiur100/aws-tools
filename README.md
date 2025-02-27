@@ -1,16 +1,25 @@
-# AWS Domain Tools
+# AWS Tools
 
-This repository contains scripts for managing domain registrations through AWS Route 53.
+This repository contains scripts for managing AWS resources including domains, certificates, RDS access, and SES email identities.
 
 ## Prerequisites
 
 - AWS CLI installed and configured
 - Valid AWS account with payment method
-- Required IAM permissions:
+- Required IAM permissions (depending on script):
   - `route53domains:RegisterDomain`
   - `route53domains:GetDomainDetail`
   - `route53domains:GetOperationDetail`
-- Contact details JSON file
+  - `acm:RequestCertificate`
+  - `acm:DescribeCertificate`
+  - `route53:ChangeResourceRecordSets`
+  - `ses:CreateEmailIdentity`
+  - `ses:GetEmailIdentity`
+  - `ses:ListEmailIdentities`
+  - `rds:DescribeDBInstances`
+  - `ec2:DescribeSecurityGroups`
+  - `ec2:AuthorizeSecurityGroupIngress`
+- Contact details JSON file (for domain registration)
 
 ## Scripts
 
@@ -218,6 +227,51 @@ Before registering a domain, create a `contact-details.json` file with your regi
 - Some domains may require additional verification
 - Ensure AWS CLI is properly configured with `aws configure`
 - Both scripts support AWS profiles for multi-account management
+
+### 8. SES Email Manager (`create-ses-email.sh`)
+
+Manages AWS SES email identities for sending and receiving emails with your applications.
+
+#### Usage:
+```bash
+./create-ses-email.sh [options]
+```
+
+#### Options:
+- `--create-identity <email>`    Create a new SES email identity
+- `--verify-identity <email>`    Verify a SES email identity
+- `--list-identities`            List all SES email identities
+- `--setup-test-inbox <email>`   Create and verify a test inbox for receiving emails
+- `--profile <aws-profile>`      AWS profile to use (default: default)
+
+#### Use Cases:
+- Set up application emails (no-reply, support, notification emails)
+- Create test inboxes for application testing
+- Verify email identities for use with SES
+- Track and manage all your SES email identities
+
+#### Examples:
+```bash
+# Create a new sender identity for your application
+./create-ses-email.sh --create-identity no-reply@example.com
+
+# Set up a test inbox for testing email receipt
+./create-ses-email.sh --setup-test-inbox test@example.com
+
+# Check verification status of an email
+./create-ses-email.sh --verify-identity no-reply@example.com
+
+# List all email identities with their verification status
+./create-ses-email.sh --list-identities
+
+# Use a specific AWS profile
+./create-ses-email.sh --create-identity support@example.com --profile prod
+```
+
+#### Required IAM Permissions:
+- `ses:CreateEmailIdentity`
+- `ses:GetEmailIdentity`
+- `ses:ListEmailIdentities`
 
 ## License
 
